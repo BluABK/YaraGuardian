@@ -34,4 +34,4 @@ plyara = "*"
 coveralls = "*"
 
 [requires]
-python_version = "3.5"
+python_version = "3.7"
