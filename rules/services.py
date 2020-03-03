@@ -3,12 +3,13 @@ import re
 
 import chardet
 from plyara import Plyara
+import plyara.utils
 from rest_framework.views import exception_handler
 from rest_framework.exceptions import APIException
 
 
 def check_lexical_convention(entry):
-    return Plyara.is_valid_rule_name(entry)
+    return plyara.utils.is_valid_rule_name(entry)
 
 
 def generate_kwargs_from_parsed_rule(parsed_rule):
@@ -30,12 +31,12 @@ def generate_kwargs_from_parsed_rule(parsed_rule):
     condition = parsed_rule['condition_terms']
 
     # TODO : Update when Plyara moves to stripping quotes from detect_imports module
-    imports = [imp.strip('"') for imp in Plyara.detect_imports(parsed_rule)]
+    imports = [imp.strip('"') for imp in plyara.utils.detect_imports(parsed_rule)]
     comments = parsed_rule.get('comments', [])
-    dependencies = Plyara.detect_dependencies(parsed_rule)
+    dependencies = plyara.utils.detect_dependencies(parsed_rule)
 
     # Calculate hash value of rule strings and condition
-    logic_hash = Plyara.generate_logic_hash(parsed_rule)
+    logic_hash = plyara.utils.generate_logic_hash(parsed_rule)
 
     # TEMP FIX - Use only a single instance of a metakey
     # until YaraGuardian models and functions can be updated
