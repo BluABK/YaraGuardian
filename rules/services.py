@@ -19,13 +19,20 @@ def generate_kwargs_from_parsed_rule(parsed_rule):
     scopes = parsed_rule.get('scopes', [])
 
     # TODO : Update when Plyara moves to clean Python types
-    metadata = parsed_rule.get('metadata', {})
-    for key, value in metadata.items():
-        if value not in ('true', 'false'):
-            try:
-                value = int(value)
-            except ValueError:
-                metadata[key] = '"' + value + '"'
+    metadata_dicts = []
+    for metadata_dict in parsed_rule.get('metadata', [{}]):
+        for key, value in metadata_dict.items():
+            if value not in ('true', 'false'):
+                try:
+                    value = int(value)
+                except ValueError:
+                    metadata_dict[key] = '"' + value + '"'
+
+        # TEMP FIX - Use only a single instance of a metakey
+        # until YaraGuardian models and functions can be updated
+        for key, value in metadata_dict.items():
+            if isinstance(value, list):
+                metadata_dict[key] = value[0]
 
     strings = parsed_rule.get('strings', [])
     condition = parsed_rule['condition_terms']
@@ -38,18 +45,12 @@ def generate_kwargs_from_parsed_rule(parsed_rule):
     # Calculate hash value of rule strings and condition
     logic_hash = plyara.utils.generate_logic_hash(parsed_rule)
 
-    # TEMP FIX - Use only a single instance of a metakey
-    # until YaraGuardian models and functions can be updated
-    for key, value in metadata.items():
-        if isinstance(value, list):
-            metadata[key] = value[0]
-
     return {'name': name,
             'tags': list(set(tags)),
             'scopes': list(set(scopes)),
             'imports': list(set(imports)),
             'comments': list(set(comments)),
-            'metadata': metadata,
+            'metadata': metadata_dicts,
             'strings': strings,
             'condition': condition,
             'dependencies': dependencies,

@@ -608,16 +608,20 @@ class YaraRuleManager(models.Manager):
                                 feedback['warnings'].append(msg)
 
                 if add_metadata:
-                    for metakey, metavalue in add_metadata.items():
-                        if check_lexical_convention(metakey) and \
-                        (metavalue.isdigit() or metavalue in ('true', 'false') or \
-                        (metavalue.startswith('\"') and metavalue.endswith('\"'))):
-                            rule_kwargs['metadata'][metakey] = metavalue
-                        else:
-                            msg = 'Skipped Invalid Metadata: {}'.format(metakey)
+                    # Iterate over each metadata dict in list (range loop due to rule_kwargs needing an index).
+                    for i in range(add_metadata):
+                        for metakey, metavalue in add_metadata[i]:
+                            # Check if the metavalue is valid.
+                            if check_lexical_convention(metakey) and \
+                                (metavalue.isdigit() or metavalue in ('true', 'false') or
+                                 (metavalue.startswith('\"') and metavalue.endswith('\"'))):
+                                # Assign the metavalue to the corresponding dict in the list.
+                                rule_kwargs['metadata'][i][metakey] = metavalue
+                            else:
+                                msg = 'Skipped Invalid Metadata: {}'.format(metakey)
 
-                            if msg not in feedback['warnings']:
-                                feedback['warnings'].append(msg)
+                                if msg not in feedback['warnings']:
+                                    feedback['warnings'].append(msg)
 
                 if prepend_name:
                     new_name = prepend_name + rule_kwargs['name']
