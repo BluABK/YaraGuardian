@@ -72,8 +72,8 @@ echo "Installing and Configuring yarn"
 sudo apt-get install -y git npm
 
 # Get Specified Version of Node
-npm cache clean -f
-npm install -g n
+sudo npm cache clean -f
+sudo npm install -g n
 n ${NODE_VERSION}
 sudo ln -sf /usr/local/n/versions/node/${NODE_VERSION}/bin/node /usr/bin/node
 
@@ -85,6 +85,9 @@ cd ${INSTALL_DIR}
 echo "Installing Python dependencies"
 export PIPENV_VENV_IN_PROJECT=true
 pip3 install pipenv
+# Remove any old already existing pipenv to avoid clutter and other silent issues.
+pipenv --rm
+
 pipenv install --deploy
 
 # Replace django-angular with forked (fixed) version.
