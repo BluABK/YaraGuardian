@@ -34,6 +34,8 @@ def generate_kwargs_from_parsed_rule(parsed_rule):
             if isinstance(value, list):
                 metadata_dict[key] = value[0]
 
+        metadata_dicts.append(metadata_dict)
+
     strings = parsed_rule.get('strings', [])
     condition = parsed_rule['condition_terms']
 
